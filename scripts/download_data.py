@@ -32,8 +32,8 @@ from typing import List, Optional, Tuple
 HF_REPO_ID = "Ricoooo/MICCAI-STS26-Challenge-Pre-Task"
 MS_DATASET_ID = "lizhii/MICCAI-STS26-Challenge-Pre-Task"
 GDRIVE_FOLDER_ID = "1lER9eIavr99g28aTO0kuxIcos_k9FBSx"
-BAIDU_URL = "https://pan.baidu.com/s/1ExampleBaiduLink"  # placeholder
-BAIDU_CODE = "STS6"  # placeholder extraction code
+BAIDU_URL = "https://pan.baidu.com/s/1U090bZnMGEJQaD3jwqaQuA"
+BAIDU_CODE = "bm2u"
 
 SUPPORTED_SOURCES = ("huggingface", "modelscope", "gdrive", "baidu")
 
