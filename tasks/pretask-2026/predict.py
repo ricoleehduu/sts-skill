@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -9,6 +10,11 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
 from tqdm import tqdm
+
+# Allow running from project root (python tasks/pretask-2026/predict.py)
+_SCRIPT_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
 
 from utils.data_loading import BasicDataset
 from unet import UNet

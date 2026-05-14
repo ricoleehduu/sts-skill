@@ -282,12 +282,23 @@ def run(task: str, output: str, source: Optional[str] = None) -> None:
     _extract_zips(output_dir)
 
     # 2. Some sources place data inside a nested directory; flatten if needed.
-    for sub in EXPECTED_SUBDIRS:
-        nested = output_dir / task / sub
-        target = output_dir / sub
-        if nested.is_dir() and not target.is_dir():
-            _log(f"Moving {nested} -> {target}")
-            shutil.move(str(nested), str(target))
+    #    Scan all immediate subdirectories for imgs/masks and flatten.
+    if not (output_dir / "imgs").is_dir():
+        for child in sorted(output_dir.iterdir()):
+            if child.is_dir() and (child / "imgs").is_dir() and (child / "masks").is_dir():
+                _log(f"Found data in nested directory: {child.name}/")
+                for sub in EXPECTED_SUBDIRS:
+                    src = child / sub
+                    dst = output_dir / sub
+                    if src.is_dir() and not dst.is_dir():
+                        _log(f"Moving {src} -> {dst}")
+                        shutil.move(str(src), str(dst))
+                # Also move test/ if present
+                test_dir = child / "test"
+                if test_dir.is_dir() and not (output_dir / "test").is_dir():
+                    _log(f"Moving {test_dir} -> {output_dir / 'test'}")
+                    shutil.move(str(test_dir), str(output_dir / "test"))
+                break
 
     # 3. Verify integrity.
     if _verify(output_dir):
