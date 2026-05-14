@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)
 ![MICCAI 2026](https://img.shields.io/badge/MICCAI-2026-orange)
 
-[English](./README.md) | [中文](#简介)
+[English](./README.md) | [中文](./README.zh.md)
 
 A Claude Code Skill for MICCAI STS Challenge participants. Provides end-to-end workflows, evaluation tools, and baseline code for all STS tasks (2023-2026).
 
@@ -145,31 +145,6 @@ Pre-Task data is available from multiple sources:
 | [STS-Challenge-2024](https://github.com/ricoleehduu/STS-Challenge-2024) | STS 2024 (instance segmentation) |
 | [STS-Challenge-2025](https://github.com/ricoleehduu/STS-Challenge-2025) | STS 2025 (3D CBCT) |
 | [STS-Challenge-2026](https://github.com/ricoleehduu/STS-Challenge-2026) | STS 2026 official repo |
-
----
-
-## 简介
-
-STS-Skill 是一个为 MICCAI STS Challenge 参赛者设计的 Claude Code Skill。提供端到端工作流、评估工具和所有 STS 任务（2023-2026）的 baseline 代码。
-
-### 快速开始
-
-安装为 Claude Code Skill 后，直接告诉 Claude 你想做什么：
-
-```
-> 我想开始 STS 2026 的 Pre-Task
-> 帮我评估模型预测结果
-> 给我看 2025 的 baseline
-> 下载 Pre-Task 数据
-```
-
-### Pre-Task 2026 流程
-
-1. 下载数据 → `python scripts/download_data.py --task pretask-2026`
-2. 训练模型 → `python tasks/pretask-2026/train.py --amp`
-3. 推理测试 → `python tasks/pretask-2026/predict.py -m checkpoints/checkpoint_epoch50.pth -i data/test/imgs`
-4. 本地评估 → `python scripts/evaluate.py --pred data/test/masks --gt data/test/gt_masks`
-5. 打包提交 → `python scripts/prepare_submit.py --masks data/test/masks --task pretask-2026`
 
 ---
 
