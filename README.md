@@ -1,5 +1,11 @@
 # STS-Skill
 
+![GitHub stars](https://img.shields.io/github/stars/ricoleehduu/sts-skill?style=social)
+![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-1.13+-ee4c2c?logo=pytorch&logoColor=white)
+![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)
+![MICCAI 2026](https://img.shields.io/badge/MICCAI-2026-orange)
+
 [English](./README.md) | [中文](#简介)
 
 A Claude Code Skill for MICCAI STS Challenge participants. Provides end-to-end workflows, evaluation tools, and baseline code for all STS tasks (2023-2026).
@@ -11,6 +17,13 @@ STS-Skill is your one-stop toolkit for the [MICCAI Semi-supervised Teeth Segment
 - **Pre-Task 2026**: Complete train → evaluate → submit pipeline (~1 hour)
 - **Task 1/2/3 2026**: Baseline code and submission guides
 - **Historical tasks (2023-2025)**: Reference implementations and resources
+
+## How it Works
+
+1. Install the skill in Claude Code
+2. Tell Claude what you want to do (e.g., "Start the STS 2026 Pre-Task")
+3. Claude reads the SKILL.md and routes you to the right workflow
+4. Follow the guided steps to complete your task
 
 ## Quick Start
 
