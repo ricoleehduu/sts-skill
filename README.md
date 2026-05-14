@@ -105,6 +105,16 @@ python scripts/evaluate.py --pred data/test/masks --gt data/test/gt_masks
 python scripts/prepare_submit.py --masks data/test/masks --task pretask-2026
 ```
 
+## Pre-Task Workflow
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  Download   │ →  │   Train     │ →  │  Evaluate   │ →  │  Inference  │ →  │   Submit    │
+│    Data     │    │   UNet      │    │  (Dice)     │    │  (predict)  │    │  (Codabench)│
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+     ~5 min            ~30 min             ~2 min             ~5 min             ~1 min
+```
+
 ## Competition Links
 
 | Resource | Link |
@@ -160,6 +170,12 @@ STS-Skill 是一个为 MICCAI STS Challenge 参赛者设计的 Claude Code Skill
 3. 推理测试 → `python tasks/pretask-2026/predict.py -m checkpoints/checkpoint_epoch50.pth -i data/test/imgs`
 4. 本地评估 → `python scripts/evaluate.py --pred data/test/masks --gt data/test/gt_masks`
 5. 打包提交 → `python scripts/prepare_submit.py --masks data/test/masks --task pretask-2026`
+
+---
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ricoleehduu/sts-skill&type=Date)](https://star-history.com/#ricoleehduu/sts-skill&Date)
 
 ---
 
