@@ -1,0 +1,30 @@
+# Pre-Task 2026 Default Training Config
+# Usage: python tasks/pretask-2026/train.py --data-dir ./data --amp
+
+model:
+  type: unet
+  n_channels: 3
+  n_classes: 1
+  bilinear: false
+
+training:
+  epochs: 50
+  batch_size: 10
+  learning_rate: 1.0e-5
+  optimizer: rmsprop
+  weight_decay: 1.0e-8
+  momentum: 0.999
+  gradient_clipping: 1.0
+  amp: true
+  img_scale: 0.5
+  val_split: 20  # fixed number of validation samples
+
+data:
+  dir: ./data
+  img_dir: imgs
+  mask_dir: masks
+  test_dir: test/imgs
+
+output:
+  checkpoint_dir: ./checkpoints
+  submission_file: task_pre_validation_data.zip
