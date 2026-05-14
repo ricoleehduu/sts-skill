@@ -3,8 +3,8 @@
 Multi-source data downloader for MICCAI STS Challenge Pre-Task data.
 
 Download sources (tried in priority order):
-  1. Huggingface  — dataset: Ricoooo/MICCAI-STS26-Challenge-Pre-Task
-  2. Modelscope   — dataset: lizhii/MICCAI-STS26-Challenge-Pre-Task
+  1. Modelscope   — dataset: lizhii/MICCAI-STS26-Challenge-Pre-Task
+  2. Huggingface  — dataset: Ricoooo/MICCAI-STS26-Challenge-Pre-Task
   3. Google Drive — folder:  1lER9eIavr99g28aTO0kuxIcos_k9FBSx
   4. Baidu Netdisk — prints manual instructions (no API)
 
@@ -35,7 +35,7 @@ GDRIVE_FOLDER_ID = "1lER9eIavr99g28aTO0kuxIcos_k9FBSx"
 BAIDU_URL = "https://pan.baidu.com/s/1U090bZnMGEJQaD3jwqaQuA"
 BAIDU_CODE = "bm2u"
 
-SUPPORTED_SOURCES = ("huggingface", "modelscope", "gdrive", "baidu")
+SUPPORTED_SOURCES = ("modelscope", "huggingface", "gdrive", "baidu")
 
 EXPECTED_SUBDIRS = ("imgs", "masks")
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".nii", ".nii.gz", ".gz"}
@@ -339,7 +339,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Download source. If omitted, sources are tried in priority order: "
-            "huggingface -> modelsope -> gdrive -> baidu"
+            "modelscope -> huggingface -> gdrive -> baidu"
         ),
     )
     return parser
