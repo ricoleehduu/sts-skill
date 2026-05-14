@@ -43,7 +43,8 @@ def train_model(
         dataset = BasicDataset(dir_img, dir_mask, img_scale)
 
     # 2. Split into train / validation partitions
-    n_val = 20
+    n_val = int(len(dataset) * val_percent)
+    n_val = min(n_val, len(dataset) - 1)  # ensure at least 1 training sample
     n_train = len(dataset) - n_val
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(0))
 
