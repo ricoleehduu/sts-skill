@@ -29,9 +29,37 @@ Task 1 focuses on removing metal artifacts from Cone-Beam CT (CBCT) dental image
 
 ## Baseline
 
-Baseline code will be released soon. Please check the competition page and this repository for updates.
+A simple UNet-based baseline is provided in the [`baseline/`](baseline/) directory.
 
-基线代码即将发布，请关注竞赛页面和本仓库获取更新。
+**Approach:** 2D UNet (4 encoder/decoder levels, skip connections) trained with L1 loss to map artifact-corrupted slices to clean slices.
+
+基线采用 2D UNet 架构，使用 L1 损失训练从含伪影切片到干净切片的映射。
+
+### Quick Start
+
+```bash
+# Install dependencies
+pip install torch numpy nibabel
+
+# Train
+python baseline/train.py \
+    --data_dir /path/to/train \
+    --output_dir ./checkpoints \
+    --epochs 100 --batch_size 4 --lr 1e-4
+
+# Predict
+python baseline/predict.py \
+    --input_dir /path/to/test_inputs \
+    --output_dir /path/to/predictions \
+    --checkpoint ./checkpoints/best_model.pth
+```
+
+### Data Format
+
+- Training data: `data_dir/input/` (artifact volumes) and `data_dir/target/` (clean volumes), paired NIfTI files (.nii.gz)
+- Input/output: 3D NIfTI volumes, processed slice by slice along the axial axis
+
+See [`baseline/README.md`](baseline/README.md) for full details.
 
 ## References
 
