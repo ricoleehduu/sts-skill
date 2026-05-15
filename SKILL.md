@@ -5,7 +5,7 @@ description: >
   teeth segmentation tasks including Pre-Task, Task 1/2/3, and historical challenges.
   Use when: starting STS challenge tasks, training UNet, evaluating segmentation masks,
   downloading challenge data, preparing submissions, or asking about STS competition workflow.
-  Covers semi-supervised learning, CBCT processing, metal artifact removal, and instance segmentation.
+  Covers semi-supervised learning, CBCT processing, metal artifact segmentation, and instance segmentation.
 ---
 
 # STS-Skill
@@ -23,7 +23,7 @@ Parse the user's message for these keywords and route accordingly:
 | User says | Route to |
 |-----------|----------|
 | "pre-task", "pretask", "pre task", "Pre-Task", "2026 pre" | `tasks/pretask-2026/GUIDE.md` |
-| "task 1", "task1", "metal artifact", "2026 task1" | `tasks/task1-2026/GUIDE.md` |
+| "task 1", "task1", "metal artifact", "metal segmentation", "2026 task1" | `tasks/task1-2026/GUIDE.md` |
 | "task 2", "task2", "2026 task2" | `tasks/task2-2026/GUIDE.md` |
 | "task 3", "task3", "2026 task3" | `tasks/task3-2026/GUIDE.md` |
 | "2025", "sts2025", "last year", "CBCT pulp" | `tasks/sts2025/GUIDE.md` |
