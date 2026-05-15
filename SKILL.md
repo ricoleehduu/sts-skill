@@ -54,9 +54,9 @@ When the user's intent is unclear, present this menu:
 
 📋 2026 Tasks:
   1. Pre-Task    - 2D segmentation (UNet, ~1 hour)
-  2. Task 1      - Metal artifact removal
-  3. Task 2      - [Task description]
-  4. Task 3      - [Task description]
+  2. Task 1      - Metal artifact removal (CBCT)
+  3. Task 2      - CBCT-IOS registration (PointNet)
+  4. Task 3      - 3D CBCT teeth segmentation (3D UNet)
 
 📚 Historical:
   5. STS 2025    - 3D CBCT pulp segmentation

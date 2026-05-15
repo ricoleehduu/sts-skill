@@ -56,8 +56,8 @@ The skill automatically routes your request to the right workflow.
 |:----:|:-----|:---------|:------:|:-----:|
 | **2026** | Pre-Task (2D Segmentation) | OPG | ✅ Full workflow | [Guide](tasks/pretask-2026/GUIDE.md) |
 | **2026** | Task 1 (Metal Artifact Removal) | CBCT | 📋 Baseline | [Guide](tasks/task1-2026/GUIDE.md) |
-| **2026** | Task 2 | CBCT | 📋 Baseline | [Guide](tasks/task2-2026/GUIDE.md) |
-| **2026** | Task 3 | CBCT | 📋 Baseline | [Guide](tasks/task3-2026/GUIDE.md) |
+| **2026** | Task 2 (CBCT-IOS Registration) | CBCT + IOS | 📋 Baseline | [Guide](tasks/task2-2026/GUIDE.md) |
+| **2026** | Task 3 (3D CBCT Teeth Segmentation) | CBCT | 📋 Baseline | [Guide](tasks/task3-2026/GUIDE.md) |
 | **2025** | 3D CBCT Pulp Segmentation | CBCT | 📖 Reference | [Guide](tasks/sts2025/GUIDE.md) |
 | **2024** | Instance Segmentation | OPG | 📖 Reference | [Guide](tasks/sts2024/GUIDE.md) |
 | **2023** | 2D Teeth Segmentation | OPG | 📖 Reference | [Guide](tasks/sts2023/GUIDE.md) |

@@ -12,7 +12,7 @@ Task 1 focuses on removing metal artifacts from Cone-Beam CT (CBCT) dental image
 
 - **Platform**: Codabench
 - **Link**: https://www.codabench.org/competitions/16027/
-- **Status**: Baseline code coming soon
+- **Status**: Baseline code available
 
 ## Task Description
 
