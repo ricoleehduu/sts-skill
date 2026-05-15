@@ -1,15 +1,15 @@
-# Task 1 Baseline: Metal Artifact Removal
+# Task 1 Baseline: CBCT Segmentation under Metal Artifacts
 
-A simple UNet-based baseline for CBCT metal artifact removal.
+A simple UNet-based baseline for teeth segmentation from metal-artifact-corrupted CBCT images.
 
 ## Approach
 
-This baseline uses a 2D UNet architecture to learn a mapping from metal-artifact-corrupted CBCT slices to clean CBCT slices. The model processes each slice independently.
+This baseline uses a 2D UNet architecture to learn a mapping from metal-artifact-corrupted CBCT slices to binary teeth segmentation masks. The model processes each slice independently.
 
 **Key details:**
 - Architecture: UNet with 4 encoder/decoder levels and skip connections
 - Input/Output: Single-channel 2D slices (256x256 by default)
-- Loss: L1 loss
+- Loss: BCE + Dice loss
 - Framework: PyTorch
 
 ## Requirements
@@ -36,8 +36,8 @@ python train.py \
 Expected data structure:
 ```
 data_dir/
-    input/    # CBCT volumes with metal artifacts (.nii.gz)
-    target/   # Clean CBCT volumes (.nii.gz)
+    images/   # CBCT volumes with metal artifacts (.nii.gz)
+    masks/    # Binary teeth segmentation masks (.nii.gz)
 ```
 
 ### Inference
@@ -52,5 +52,5 @@ python predict.py \
 ## Limitations
 
 - Processes 2D slices independently; no 3D context
-- No domain-specific preprocessing (e.g., metal mask, sinogram correction)
-- Small receptive field may miss large-scale artifacts
+- No domain-specific preprocessing (e.g., metal mask handling)
+- Small receptive field may struggle with large artifact regions

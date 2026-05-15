@@ -1,5 +1,5 @@
 """
-UNet baseline model for CBCT metal artifact removal.
+UNet baseline model for CBCT teeth segmentation under metal artifacts.
 
 A standard 2D UNet with skip connections, designed as a simple starting
 point for the STS 2026 Task 1 challenge.
@@ -29,11 +29,11 @@ class DoubleConv(nn.Module):
 
 class UNet(nn.Module):
     """
-    2D UNet for image-to-image restoration.
+    2D UNet for binary teeth segmentation.
 
     Args:
         in_channels: Number of input channels (default: 1 for grayscale CT).
-        out_channels: Number of output channels (default: 1).
+        out_channels: Number of output channels (default: 1 for binary seg).
         features: List of feature counts for each encoder level.
     """
 

@@ -1,8 +1,8 @@
 """
-Training script for the Task 1 metal artifact removal baseline.
+Training script for the Task 1 CBCT teeth segmentation baseline.
 
-Reads paired (artifact, clean) NIfTI volumes, extracts 2D slices,
-and trains the UNet model with L1 loss.
+Reads paired (image, mask) NIfTI volumes, extracts 2D slices,
+and trains the UNet model with BCE + Dice loss.
 
 Usage:
     python train.py --data_dir /path/to/train --output_dir ./checkpoints
@@ -22,6 +22,17 @@ from model import UNet
 
 
 # ---------------------------------------------------------------------------
+# Dice loss
+# ---------------------------------------------------------------------------
+
+def dice_loss(pred, target, smooth=1e-5):
+    """Compute Dice loss for binary segmentation."""
+    pred = torch.sigmoid(pred)
+    intersection = (pred * target).sum()
+    return 1 - (2.0 * intersection + smooth) / (pred.sum() + target.sum() + smooth)
+
+
+# ---------------------------------------------------------------------------
 # Dataset
 # ---------------------------------------------------------------------------
 
@@ -30,37 +41,37 @@ class CBCTSliceDataset(Dataset):
     Loads paired NIfTI volumes and yields random 2D axial slices.
 
     Expects:
-        data_dir/input/  -- artifact-corrupted volumes (.nii.gz)
-        data_dir/target/ -- clean volumes (.nii.gz)
+        data_dir/images/ -- CBCT volumes with metal artifacts (.nii.gz)
+        data_dir/masks/  -- Binary teeth segmentation masks (.nii.gz)
 
-    File names must match between input/ and target/.
+    File names must match between images/ and masks/.
     """
 
     def __init__(self, data_dir, patch_size=256, augment=True):
         self.patch_size = patch_size
         self.augment = augment
 
-        input_dir = os.path.join(data_dir, "input")
-        target_dir = os.path.join(data_dir, "target")
+        image_dir = os.path.join(data_dir, "images")
+        mask_dir = os.path.join(data_dir, "masks")
 
-        self.slices = []  # list of (input_path, target_path, slice_idx)
+        self.slices = []  # list of (image_path, mask_path, slice_idx)
 
-        for fname in sorted(os.listdir(input_dir)):
+        for fname in sorted(os.listdir(image_dir)):
             if not fname.endswith((".nii", ".nii.gz")):
                 continue
-            in_path = os.path.join(input_dir, fname)
-            gt_path = os.path.join(target_dir, fname)
-            if not os.path.exists(gt_path):
-                print(f"Warning: no matching target for {fname}, skipping.")
+            img_path = os.path.join(image_dir, fname)
+            msk_path = os.path.join(mask_dir, fname)
+            if not os.path.exists(msk_path):
+                print(f"Warning: no matching mask for {fname}, skipping.")
                 continue
 
             # Count slices in this volume
-            nii = nib.load(in_path)
+            nii = nib.load(img_path)
             n_slices = nii.shape[2] if nii.ndim == 3 else nii.shape[3]
             for i in range(n_slices):
-                self.slices.append((in_path, gt_path, i))
+                self.slices.append((img_path, msk_path, i))
 
-        print(f"Found {len(self.slices)} slices from {input_dir}")
+        print(f"Found {len(self.slices)} slices from {image_dir}")
 
     def __len__(self):
         return len(self.slices)
@@ -73,43 +84,45 @@ class CBCTSliceDataset(Dataset):
             slc = vol[:, :, idx, 0]
         return slc.astype(np.float32)
 
-    def _random_crop(self, img, target):
+    def _random_crop(self, img, mask):
         h, w = img.shape
         ps = self.patch_size
         if h < ps or w < ps:
             img = np.pad(img, ((0, max(0, ps - h)), (0, max(0, ps - w))), mode="reflect")
-            target = np.pad(target, ((0, max(0, ps - h)), (0, max(0, ps - w))), mode="reflect")
+            mask = np.pad(mask, ((0, max(0, ps - h)), (0, max(0, ps - w))), mode="reflect")
             h, w = img.shape
         y = random.randint(0, h - ps)
         x = random.randint(0, w - ps)
-        return img[y:y+ps, x:x+ps], target[y:y+ps, x:x+ps]
+        return img[y:y+ps, x:x+ps], mask[y:y+ps, x:x+ps]
 
-    def _augment(self, img, target):
+    def _augment(self, img, mask):
         if random.random() > 0.5:
             img = np.flip(img, axis=0).copy()
-            target = np.flip(target, axis=0).copy()
+            mask = np.flip(mask, axis=0).copy()
         if random.random() > 0.5:
             img = np.flip(img, axis=1).copy()
-            target = np.flip(target, axis=1).copy()
-        return img, target
+            mask = np.flip(mask, axis=1).copy()
+        return img, mask
 
     def __getitem__(self, idx):
-        in_path, gt_path, sidx = self.slices[idx]
-        img = self._load_slice(in_path, sidx)
-        target = self._load_slice(gt_path, sidx)
+        img_path, msk_path, sidx = self.slices[idx]
+        img = self._load_slice(img_path, sidx)
+        mask = self._load_slice(msk_path, sidx)
 
-        # Normalize to [0, 1] per-slice
+        # Normalize image to [0, 1] per-slice
         img = (img - img.min()) / (img.max() - img.min() + 1e-8)
-        target = (target - target.min()) / (target.max() - target.min() + 1e-8)
 
-        img, target = self._random_crop(img, target)
+        # Binarize mask (anything > 0 is teeth)
+        mask = (mask > 0).astype(np.float32)
+
+        img, mask = self._random_crop(img, mask)
 
         if self.augment:
-            img, target = self._augment(img, target)
+            img, mask = self._augment(img, mask)
 
         img = torch.from_numpy(img).unsqueeze(0)       # (1, H, W)
-        target = torch.from_numpy(target).unsqueeze(0)
-        return img, target
+        mask = torch.from_numpy(mask).unsqueeze(0)
+        return img, mask
 
 
 # ---------------------------------------------------------------------------
@@ -129,7 +142,7 @@ def train(args):
     model = UNet(in_channels=1, out_channels=1).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
-    criterion = nn.L1Loss()
+    bce = nn.BCEWithLogitsLoss()
 
     os.makedirs(args.output_dir, exist_ok=True)
     best_loss = float("inf")
@@ -138,12 +151,12 @@ def train(args):
         model.train()
         epoch_loss = 0.0
 
-        for batch_idx, (images, targets) in enumerate(loader):
+        for batch_idx, (images, masks) in enumerate(loader):
             images = images.to(device)
-            targets = targets.to(device)
+            masks = masks.to(device)
 
             preds = model(images)
-            loss = criterion(preds, targets)
+            loss = bce(preds, masks) + dice_loss(preds, masks)
 
             optimizer.zero_grad()
             loss.backward()
@@ -180,7 +193,7 @@ def train(args):
 def main():
     parser = argparse.ArgumentParser(description="Train Task 1 baseline")
     parser.add_argument("--data_dir", type=str, required=True,
-                        help="Root dir with input/ and target/ subfolders")
+                        help="Root dir with images/ and masks/ subfolders")
     parser.add_argument("--output_dir", type=str, default="./checkpoints",
                         help="Directory to save checkpoints")
     parser.add_argument("--epochs", type=int, default=100)

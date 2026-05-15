@@ -1,12 +1,12 @@
-# STS 2026 Task 1: Metal Artifact Removal in CBCT
+# STS 2026 Task 1: CBCT Segmentation under Metal Artifacts
 
-STS 2026 任务 1：CBCT 图像金属伪影去除
+STS 2026 任务 1：金属伪影影响下的 CBCT 分割
 
 ## Overview
 
-Task 1 focuses on removing metal artifacts from Cone-Beam CT (CBCT) dental images. Metal artifacts caused by dental implants, fillings, and orthodontic hardware degrade image quality and interfere with downstream diagnosis and analysis.
+Task 1 focuses on teeth segmentation from Cone-Beam CT (CBCT) images degraded by metal artifacts. Dental implants, fillings, and orthodontic hardware introduce severe artifacts that challenge conventional segmentation methods.
 
-本任务聚焦于去除口腔 CBCT 图像中的金属伪影。种植体、充填物和正畸装置等金属物体会产生伪影，降低图像质量，干扰后续诊断与分析。
+本任务聚焦于在金属伪影干扰下的 CBCT 图像牙齿分割。种植体、充填物和正畸装置等金属物体会产生严重伪影，对传统分割方法构成挑战。
 
 ## Competition
 
@@ -17,8 +17,8 @@ Task 1 focuses on removing metal artifacts from Cone-Beam CT (CBCT) dental image
 ## Task Description
 
 - **Input**: CBCT volumes containing metal artifacts
-- **Output**: Artifact-corrected CBCT volumes
-- **Metric**: To be announced
+- **Output**: Binary segmentation masks for teeth
+- **Metric**: Dice Similarity Coefficient (DSC)
 
 ## How to Submit
 
@@ -31,9 +31,9 @@ Task 1 focuses on removing metal artifacts from Cone-Beam CT (CBCT) dental image
 
 A simple UNet-based baseline is provided in the [`baseline/`](baseline/) directory.
 
-**Approach:** 2D UNet (4 encoder/decoder levels, skip connections) trained with L1 loss to map artifact-corrupted slices to clean slices.
+**Approach:** 2D UNet (4 encoder/decoder levels, skip connections) trained with BCE + Dice loss for binary teeth segmentation from artifact-corrupted CBCT slices.
 
-基线采用 2D UNet 架构，使用 L1 损失训练从含伪影切片到干净切片的映射。
+基线采用 2D UNet 架构，使用 BCE + Dice 联合损失训练从含伪影 CBCT 切片到牙齿分割 mask 的映射。
 
 ### Quick Start
 
@@ -56,7 +56,7 @@ python baseline/predict.py \
 
 ### Data Format
 
-- Training data: `data_dir/input/` (artifact volumes) and `data_dir/target/` (clean volumes), paired NIfTI files (.nii.gz)
+- Training data: `data_dir/images/` (CBCT volumes with metal artifacts) and `data_dir/masks/` (binary segmentation masks), paired NIfTI files (.nii.gz)
 - Input/output: 3D NIfTI volumes, processed slice by slice along the axial axis
 
 See [`baseline/README.md`](baseline/README.md) for full details.

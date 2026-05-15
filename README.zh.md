@@ -55,7 +55,7 @@ Skill 会自动将你的请求路由到正确的工作流。
 | 年份 | 任务 | 模态 | 状态 | 指南 |
 |:----:|:-----|:-----|:----:|:----:|
 | **2026** | Pre-Task（2D 分割） | OPG | ✅ 完整流程 | [指南](tasks/pretask-2026/GUIDE.md) |
-| **2026** | Task 1（金属伪影去除） | CBCT | 📋 Baseline | [指南](tasks/task1-2026/GUIDE.md) |
+| **2026** | Task 1（金属伪影影响下的 CBCT 分割） | CBCT | 📋 Baseline | [指南](tasks/task1-2026/GUIDE.md) |
 | **2026** | Task 2（CBCT-IOS 配准） | CBCT + IOS | 📋 Baseline | [指南](tasks/task2-2026/GUIDE.md) |
 | **2026** | Task 3（3D CBCT 牙齿分割） | CBCT | 📋 Baseline | [指南](tasks/task3-2026/GUIDE.md) |
 | **2025** | 3D CBCT 牙髓分割 | CBCT | 📖 参考 | [指南](tasks/sts2025/GUIDE.md) |

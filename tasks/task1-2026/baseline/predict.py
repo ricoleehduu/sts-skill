@@ -1,8 +1,8 @@
 """
-Inference script for the Task 1 metal artifact removal baseline.
+Inference script for the Task 1 CBCT teeth segmentation baseline.
 
 Loads a trained UNet model and processes input NIfTI volumes slice by slice,
-producing artifact-corrected outputs.
+producing binary segmentation masks.
 
 Usage:
     python predict.py \
@@ -24,29 +24,25 @@ from model import UNet
 def normalize_volume(vol):
     """Normalize volume to [0, 1] using global min/max."""
     vmin, vmax = vol.min(), vol.max()
-    return (vol - vmin) / (vmax - vmin + 1e-8), vmin, vmax
+    return (vol - vmin) / (vmax - vmin + 1e-8)
 
 
-def denormalize_volume(vol, vmin, vmax):
-    """Restore original intensity range."""
-    return vol * (vmax - vmin) + vmin
-
-
-def process_volume(model, volume, device, patch_size=256):
+def process_volume(model, volume, device, patch_size=256, threshold=0.5):
     """
-    Process a 3D volume slice by slice.
+    Process a 3D volume slice by slice for binary segmentation.
 
     Args:
         model: Trained UNet model.
         volume: numpy array of shape (H, W, D).
         device: torch device.
         patch_size: tile size for inference.
+        threshold: probability threshold for binary output.
 
     Returns:
-        Restored volume of the same shape.
+        Binary segmentation volume (0/1) of the same shape.
     """
     h, w, d = volume.shape
-    output = np.zeros_like(volume, dtype=np.float32)
+    output = np.zeros((h, w, d), dtype=np.uint8)
 
     model.eval()
     with torch.no_grad():
@@ -54,7 +50,7 @@ def process_volume(model, volume, device, patch_size=256):
             slc = volume[:, :, i].astype(np.float32)
 
             # Normalize
-            slc_norm, vmin, vmax = normalize_volume(slc)
+            slc_norm = normalize_volume(slc)
 
             # Pad to patch_size if needed
             pad_h = max(0, patch_size - h)
@@ -66,15 +62,13 @@ def process_volume(model, volume, device, patch_size=256):
             tensor = torch.from_numpy(slc_norm).unsqueeze(0).unsqueeze(0).to(device)
 
             # Predict
-            pred = model(tensor).squeeze().cpu().numpy()
+            pred = torch.sigmoid(model(tensor)).squeeze().cpu().numpy()
 
             # Crop padding
             pred = pred[:h, :w]
 
-            # Denormalize
-            pred = denormalize_volume(pred, vmin, vmax)
-
-            output[:, :, i] = pred
+            # Threshold to binary
+            output[:, :, i] = (pred > threshold).astype(np.uint8)
 
     return output
 
@@ -84,10 +78,12 @@ def main():
     parser.add_argument("--input_dir", type=str, required=True,
                         help="Directory containing input NIfTI volumes")
     parser.add_argument("--output_dir", type=str, required=True,
-                        help="Directory to save predicted volumes")
+                        help="Directory to save predicted masks")
     parser.add_argument("--checkpoint", type=str, required=True,
                         help="Path to model checkpoint (.pth)")
     parser.add_argument("--patch_size", type=int, default=256)
+    parser.add_argument("--threshold", type=float, default=0.5,
+                        help="Probability threshold for binary segmentation")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -129,7 +125,7 @@ def main():
             continue
 
         # Process
-        result = process_volume(model, volume, device, args.patch_size)
+        result = process_volume(model, volume, device, args.patch_size, args.threshold)
 
         # Save with same affine/header
         out_nii = nib.Nifti1Image(result, affine=nii.affine, header=nii.header)
